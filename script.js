@@ -1,12 +1,12 @@
-// --- START OF FINAL script.js CODE (with YOUR new URL) ---
+// --- START OF MODIFIED script.js CODE ---
 
 const chatOutput = document.getElementById('chat-output');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 const statusArea = document.getElementById('status-area');
 
-// --- !!! यहाँ आपका नया Replit URL डाला गया है !!! ---
-const backendUrl = 'https://855d36bc-6914-48b9-95d9-6d896d82dba3-00-fh5p4j0k62xl.sisko.replit.dev/api/chat'; // <<<<<===== यह लाइन आपके नए URL से अपडेट हो गई है =====<<<<<
+// --- !!! Backend ka sahi URL (Render wala) yahaan daalein !!! ---
+const backendUrl = 'https://deepseek-66bq.onrender.com/api/chat'; // <<<<<===== YEH LINE UPDATE KI GAYI HAI =====<<<<<
 
 function addMessage(text, sender) {
     if (!chatOutput) { console.error("Error: chatOutput element not found!"); return; }
@@ -20,8 +20,8 @@ function addMessage(text, sender) {
 
 async function sendMessage() {
      if (!userInput || !sendButton || !statusArea || !chatOutput) {
-         console.error("Error: One or more essential HTML elements not found!");
-         addMessage("त्रुटि: पेज लोड होने में समस्या है। कृपया रीफ़्रेश करें।", "error");
+         console.error("Error: Essential HTML elements not found!");
+         addMessage("त्रुटि: पेज लोड होने में समस्या।", "error");
          return;
      }
     const userText = userInput.value.trim();
@@ -39,20 +39,16 @@ async function sendMessage() {
     }
     let accumulatedResponse = '';
     try {
-        if (!backendUrl || !(backendUrl.includes('replit.dev') || backendUrl.includes('repl.co') || backendUrl.includes('repl.run'))) {
-             console.warn('Backend URL ठीक नहीं लग रहा है या सेट नहीं है: ', backendUrl);
-             // आप यहाँ एरर फेंक सकते हैं अगर URL सेट न हो
-             if (!backendUrl || backendUrl.startsWith('PASTE_YOUR_NEW_REPLIT_URL_HERE')) { // यह जांच अब शायद उतनी ज़रूरी नहीं
-                 throw new Error('Backend URL को script.js में सेट करना आवश्यक है!');
-             }
-        }
-        const response = await fetch(backendUrl, {
+        // Ab Replit URL check karne ki zaroorat nahi, use comment kar dete hain ya hata dete hain.
+        // if (!backendUrl || !(backendUrl.includes('replit.dev') || ...)) { ... }
+
+        const response = await fetch(backendUrl, { // Ab yeh sahi Render URL use karega
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: userText }),
         });
         if (!response.ok) {
-            const errorText = await response.text();
+            const errorText = await response.text(); // Error text ko padhne ki koshish karein
             throw new Error(`API Error ${response.status}: ${errorText || response.statusText}`);
         }
         const reader = response.body.getReader();
@@ -63,23 +59,27 @@ async function sendMessage() {
             if (done) break;
             const chunk = decoder.decode(value, { stream: true });
             accumulatedResponse += chunk;
-            if (firstChunk && chunk.trim()) {
-                botMessageElement.textContent = chunk;
-                firstChunk = false;
-            } else {
-                botMessageElement.textContent += chunk;
+            // Bot message ko update karte rahein
+            if (botMessageElement) {
+               if (firstChunk && chunk.trim()) {
+                   botMessageElement.textContent = chunk; // Pehla chunk seedha display karein
+                   firstChunk = false;
+               } else {
+                   botMessageElement.textContent += chunk; // Baaki chunks ko jodte jaayein
+               }
             }
-            if (chatOutput) chatOutput.scrollTop = chatOutput.scrollHeight;
+            if (chatOutput) chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to bottom
         }
     } catch (error) {
-        console.error('संदेश भेजने या स्ट्रीम प्राप्त करने में त्रुटि:', error);
+        console.error('Error sending message or receiving stream:', error);
         if (botMessageElement) {
-           botMessageElement.textContent = `त्रुटि: ${error.message}`;
+           botMessageElement.textContent = `त्रुटि: ${error.message}`; // Error ko UI mein dikhayein
            botMessageElement.className = 'error-message';
         } else {
             addMessage(`त्रुटि: ${error.message}`, 'error');
         }
     } finally {
+        // Reset UI state
         if(sendButton) sendButton.disabled = false;
         if(userInput) userInput.disabled = false;
         if(statusArea) statusArea.textContent = '';
@@ -87,7 +87,7 @@ async function sendMessage() {
     }
 }
 
-// --- इवेंट्स सेट करें ---
+// --- Event Listeners ---
 if (sendButton) {
     sendButton.addEventListener('click', sendMessage);
 } else { console.error("Error: Send button not found!"); }
@@ -102,4 +102,4 @@ if (userInput) {
     userInput.focus();
 } else { console.error("Error: User input not found!"); }
 
-// --- END OF FINAL script.js CODE ---
+// --- END OF MODIFIED script.js CODE ---
