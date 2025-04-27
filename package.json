@@ -1,7 +1,7 @@
 {
   "name": "nodejs",
   "version": "1.0.0",
-  "type": "module",  // <--- Yeh line add karein/ensure karein
+  "type": "module",  
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@huggingface/inference": "^3.9.1",
-    // "@types/node": "^22.13.11", // Optional, hata sakte hain agar TS use nahi kar rahe
+    // "@types/node": "^22.13.11", 
     "cors": "^2.8.5",
     "express": "^5.1.0"
   }
